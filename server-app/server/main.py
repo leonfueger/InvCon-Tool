@@ -5,29 +5,31 @@ import os
 import urllib.parse as urlparse
 import glob
 
-MARK_LINE="==========================================================================="
+MARK_LINE = "==========================================================================="
 hostName = '0.0.0.0'
 serverPort = 8080
-DEBUG = True 
+DEBUG = True
 cached_folders = "./Experiment"
+
+
 class HandleContractAddressQuery:
     @classmethod
     def query(cls, contractAddress):
         return cls.__queryContractAddress(contractAddress)
-    
+
     @classmethod
     def __queryContractAddress(cls, contractAddress):
         matches = glob.glob(f"{cached_folders}/*/*/{contractAddress}")
         if len(matches) == 0:
-            return None, None, None, None  
+            return None, None, None, None
         else:
             matches1 = glob.glob(f"{matches[0]}/*.sol")
             if len(matches1) == 0:
-                return None, None, None, None 
-            sourceCode =  open(matches1[0]).read()
+                return None, None, None, None
+            sourceCode = open(matches1[0]).read()
             matches2 = glob.glob(f"{matches[0]}/*.inv")
             configs = glob.glob(f"{matches[0]}/config.json")
-            assert len(configs) == 1 
+            assert len(configs) == 1
             config = json.load(open(configs[0]))
             contractName, compilerVersion = config["name"], config["compiler_version"]
             # print(matches2)
@@ -39,13 +41,16 @@ class HandleContractAddressQuery:
                     return sourceCode, inv, contractName, compilerVersion
                 else:
                     return sourceCode, None, contractName, compilerVersion
+
     @classmethod
     def __query_for_cachedresul(cls, contractAddress):
 
-        pass     
+        pass
+
     @classmethod
     def __query_for_etherscan(cls, contractAddress):
-        pass 
+        pass
+
 
 class MyServer(BaseHTTPRequestHandler):
     def _set_response(self):
@@ -56,9 +61,9 @@ class MyServer(BaseHTTPRequestHandler):
 
     def do_GET(self):
         headers = self.headers
-        path = self.path 
+        path = self.path
         parameters = urlparse.urlparse(path)
-        query =  parameters.query
+        query = parameters.query
         queryresult = urlparse.parse_qs(query)
         if DEBUG:
             # print(headers)
@@ -66,24 +71,29 @@ class MyServer(BaseHTTPRequestHandler):
         print(queryresult)
         self._set_response()
         if "address" in queryresult:
-            assert len(queryresult["address"]) == 1, "only accept one contract address per request"
+            assert len(
+                queryresult["address"]) == 1, "only accept one contract address per request"
             address = queryresult["address"][0]
-            source, inv, contractName, compilerVersion = HandleContractAddressQuery.query(contractAddress=address)
-            # if source is None:
-            #     # this contract has not been searched
-            #     # so we search the contract and detect its invariant;
-            #     # invariant detection may take some time depending on the number of smart contract transactions 
-            #     # because we need to crawler relevant transaction information from etherscan
-            #     cmd = "invcon --eth_address {contractAddress} --workspace ./Experiment/tmp"
-            #     os.system(cmd)
-            #     source, inv, contractName, compilerVersion = HandleContractAddressQuery.query(contractAddress=address)
-            response_data = dict(data="hello from server", source = source, inv=inv, contractName=contractName, compilerVersion=compilerVersion)
+            source, inv, contractName, compilerVersion = HandleContractAddressQuery.query(
+                contractAddress=address)
+            if source is None:
+                # this contract has not been searched
+                # so we search the contract and detect its invariant;
+                # invariant detection may take some time depending on the number of smart contract transactions
+                # because we need to crawler relevant transaction information from etherscan
+                cmd = "invcon --eth_address {contractAddress} --workspace ./Experiment/tmp"
+                os.system(cmd)
+                source, inv, contractName, compilerVersion = HandleContractAddressQuery.query(
+                    contractAddress=address)
+            response_data = dict(data="hello from server", source=source, inv=inv,
+                                 contractName=contractName, compilerVersion=compilerVersion)
         else:
             response_data = dict(data="hello from server")
         self.wfile.write(json.dumps(response_data).encode("utf-8"))
 
+
 if __name__ == "__main__":
-    webServer =  HTTPServer((hostName, serverPort), MyServer)
+    webServer = HTTPServer((hostName, serverPort), MyServer)
     print("Server started http://%s:%s" % (hostName, serverPort))
     try:
         webServer.serve_forever()

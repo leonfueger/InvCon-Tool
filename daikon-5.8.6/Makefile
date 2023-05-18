@@ -141,7 +141,7 @@ help:
 	@echo " junit                    -- run unit tests"
 	@echo " test                     -- run system tests"
 # must 'make compile' before 'make doc-all'
-	@echo " doc-all                  -- build all documentation"
+	@echo " doc-all-except-pdf              -- build all documentation"
 	@echo " tags TAGS                -- make TAGS file for Emacs"
 	@echo " kvasir                   -- make Kvasir, the C front end"
 	@echo " very-clean               -- remove (most) all generated files"
@@ -243,7 +243,7 @@ rebuild-everything-but-kvasir:
 	${MAKE} -C ${DAIKONDIR} daikon.jar
 	${MAKE} -C ${DAIKONDIR}/java dcomp_rt.jar
 	${MAKE} -C ${DAIKONDIR}/java javadoc
-	${MAKE} -C ${DAIKONDIR} doc-all
+	${MAKE} -C ${DAIKONDIR} doc-all-except-pdf
 
 rebuild-kvasir:
 	${MAKE} build-kvasir
@@ -279,11 +279,11 @@ quick-test:
 	java -cp $(QT_PATH) daikon.Chicory --daikon DataStructures.StackArTester
 
 # Sanity check, suitable for continuous integration such as Jenkins or Travis.
-nightly-test:
-	$(MAKE) showvars compile daikon.jar
-	$(MAKE) javadoc doc-all
-	$(MAKE) dyncomp-jdk
-	$(MAKE) junit test
+# nightly-test:
+# 	$(MAKE) showvars compile daikon.jar
+# 	$(MAKE) javadoc doc-all
+# 	$(MAKE) dyncomp-jdk
+# 	$(MAKE) junit test
 
 # For systems such as Ubuntu 12.04 where makeinfo does not take the --pdf
 # command-line option, don't build the PDF manual.
@@ -349,7 +349,7 @@ test-staged-dist: $(STAGING_DIR)
 	## Test the main target of the makefile.
 	cd $(DISTTESTDIR)/daikon && make
 	## Test that we can build docs.
-	cd $(DISTTESTDIR)/daikon && $(MAKE) doc-all
+	cd $(DISTTESTDIR)/daikon && $(MAKE) doc-all-except-pdf
 	## Test the basic operation of Chicory/Daikon.
 	cd $(DISTTESTDIR)/daikon && $(MAKE) quick-test
 
@@ -481,8 +481,8 @@ doc/CHANGES: doc/daikon.texinfo
 	@exit 1
 
 
-doc-all:
-	cd doc && $(MAKE) all
+# doc-all:
+# 	cd doc && $(MAKE) all
 doc-all-except-pdf:
 	cd doc && $(MAKE) all-except-pdf
 
@@ -589,7 +589,7 @@ daikon.jar: $(DAIKON_JAVA_FILES) $(patsubst %,java/%,$(DAIKON_RESOURCE_FILES))
 # could make a distribution even if there were diffs in the current
 # checkout.
 daikon.tar daikon.zip: kvasir $(README_PATHS) $(DAIKON_JAVA_FILES) java/Makefile
-	make doc-all
+	make doc-all-except-pdf
 	# `make doc-all` just did the work, but check that the files exist.
 	make $(DOC_PATHS)
 	make daikon.jar

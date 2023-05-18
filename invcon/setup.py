@@ -19,7 +19,6 @@ setup(
     ],
     # dependency_links=["git+https://github.com/crytic/crytic-compile.git@master#egg=crytic-compile"],
     license="AGPL-3.0",
-    long_description=open("README.md").read(),
     entry_points={
         "console_scripts": [
             "invcon = invcon.__main__:main"

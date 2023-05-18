@@ -75,13 +75,12 @@ daikon-html: ../utils/html-tools
 	${TEXI2HTML} --no-split daikon.texinfo
 	# Fixup 'bad' href inserted by makeinfo.
 	perl -pi -e 's|dir.html#Top|index.html|;' daikon.html
-	${HTMLTOOLS}/html-add-favicon . daikon-favicon.png
 
 developer.html: developer.texinfo ../utils/html-tools
 	${TEXI2HTML} --no-split $<
 	# Fixup 'bad' href inserted by makeinfo.
 	perl -pi -e 's|dir.html#Top|index.html|;' $@
-	${HTMLTOOLS}/html-add-favicon . daikon-favicon.png
+
 
 html-chap: daikon/index.html developer/index.html
 
@@ -96,7 +95,6 @@ daikon/index.html: daikon.texinfo config-options.texinfo invariants-doc.texinfo 
 	mkdir daikon/images
 	cp images/*.png daikon/images
 	cp images/*.jpg daikon/images
-	${HTMLTOOLS}/html-add-favicon daikon ../daikon-favicon.png
 
 developer/index.html: developer.texinfo ../utils/html-tools
 	rm -rf developer/*
@@ -106,7 +104,7 @@ developer/index.html: developer.texinfo ../utils/html-tools
 	mkdir developer/images
 	cp images/*.png developer/images
 	cp images/*.jpg developer/images
-	${HTMLTOOLS}/html-add-favicon developer ../daikon-favicon.png
+
 
 pdf: daikon.pdf images/dfepl-flow.eps developer.pdf
 

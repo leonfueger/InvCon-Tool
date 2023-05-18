@@ -15,8 +15,6 @@ from invcon.parsing.storageLayout import main_impl as generateStorageLayout
 import shutil
 
 scraper = cloudscraper.create_scraper(browser='chrome') # returns a CloudScraper instance
-scraper.proxies = {"http": "socks5://127.0.0.1:20170", "https": "socks5://127.0.0.1:20170",
-    "socks5": "socks5://127.0.0.1:20170"}
 INTERNAL_TRANSACTION="internal_transactions"
 
 TransactionThreshold = 50
@@ -276,7 +274,7 @@ def getBSCHtmlBody(address):
 BLOCKCHAIN_ETH = "ETH"
 BLOCKCHAIN_BSC = "BSC"
 
-APIKEY_BLOCKCHAIN_ETH = "URF6R5PGNZ7CT6TTBU7M8NH5V8WRISHIZZ"
+APIKEY_BLOCKCHAIN_ETH = "NVEXVBZMECA3II6CC1FEU13H7J613DJTS3"
 APIKEY_BLOCKCHAIN_BSC = "A4YZESUAIA4IGXSBK8D4NYQMUBMWTVAXN9"
 
 WEBPAGE_FUNC_BLOCKCAHIN_ETH = getETHHtmlBody
@@ -422,7 +420,7 @@ class Crawler:
         if os.path.exists(self.addressdir):
             boolflag, results = self.readLocalSource()
             if boolflag:
-                nodejs_dir = "/home/liuye/Projects/InvCon/invcon/nodejs"
+                nodejs_dir = "/usr/src/app/invcon/nodejs"
                 cmd = f'cd {nodejs_dir} && node decodeTx.js --abi {results["abi_file"]} --tx {results["transactions_file"]} --output {os.path.join(os.path.dirname(results["transactions_file"]), "tx_decode.json")}'
                 os.system(cmd)
                 assert os.path.exists(os.path.join(os.path.dirname(results["transactions_file"]), "tx_decode.json")), "Decoding error: failed to decode transactions"
@@ -449,7 +447,7 @@ class Crawler:
             results["transactions_file"] = txs 
             
             # decode txs
-            nodejs_dir ="/home/liuye/Projects/InvCon/invcon/nodejs"
+            nodejs_dir ="/usr/src/app/invcon/nodejs"
             tx_decode_file = os.path.join(os.path.dirname(results["transactions_file"]), "tx_decode.json")
             cmd = f'cd {nodejs_dir} && node decodeTx.js --abi {results["abi_file"]} --tx {results["transactions_file"]} --output {tx_decode_file}'
             os.system(cmd)

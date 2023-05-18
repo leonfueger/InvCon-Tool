@@ -1181,7 +1181,6 @@ else
 	@rm -f javadoc-files.txt
 	cd $(JAVADOC_DEST) && $(PLUMESCRIPTS)/preplace '^ *&#64;cindex.*' ''
 	cp -pf ../doc/daikon-favicon.png $(JAVADOC_DEST)
-	cd $(JAVADOC_DEST) && $(HTMLTOOLS)/html-add-favicon . daikon-favicon.png
 endif
 
 # Run Javadoc on each file individually, to determine which one is crashing Javadoc.
